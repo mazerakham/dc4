@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/bowser"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/fabel"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ox"/>
+	<classpathentry kind="lib" path="lib/junit/apiguardian-api-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-jupiter-api-5.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-jupiter-engine-5.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-jupiter-params-5.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-platform-commons-1.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-platform-engine-1.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-platform-launcher-1.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/junit/opentest4j-1.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

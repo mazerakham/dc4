@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
+<project basedir="." default="build" name="dc4">
+    <property environment="env"/>
+    <property name="ox.location" value="../ox"/>
+    <property name="bowser.location" value="../bowser"/>
+	<property name="fabel.location" value="../fabel"/>
+    <property name="EZDB.location" value="../EZDB"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="8"/>
+    <property name="source" value="8"/>
+	<path id="ox.classpath">
+        <pathelement location="${ox.location}/bin"/>
+    	<fileset dir="${ox.location}/lib" includes="**/*.jar" />
+    </path>
+    <path id="bowser.classpath">
+        <pathelement location="${bowser.location}/bin"/>
+    	<fileset dir="${bowser.location}/lib" includes="**/*.jar" />
+        <path refid="ox.classpath"/>
+    </path>
+    <path id="fabel.classpath">
+        <pathelement location="${fabel.location}/bin"/>
+    	<fileset dir="${fabel.location}/lib" includes="**/*.jar" />
+        <path refid="ox.classpath"/>
+    </path>
+    <path id="EZDB.classpath">
+        <pathelement location="${EZDB.location}/bin"/>
+    	<fileset dir="${EZDB.location}/lib" includes="**/*.jar" />
+        <path refid="ox.classpath"/>
+    </path>
+    <path id="dc4.classpath">
+        <pathelement location="bin"/>
+        <path refid="bowser.classpath"/>
+    	<path refid="fabel.classpath"/>
+        <path refid="EZDB.classpath"/>
+        <path refid="ox.classpath"/>
+    	<fileset dir="lib" includes="**/*.jar" />
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+            <fileset dir="test">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${ox.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${bowser.location}" inheritAll="false" target="clean"/>
+    	<ant antfile="build.xml" dir="${fabel.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${EZDB.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${ox.location}" inheritAll="false" target="build-project"/>
+        <ant antfile="build.xml" dir="${bowser.location}" inheritAll="false" target="build-project"/>
+    	<ant antfile="build.xml" dir="${fabel.location}" inheritAll="false" target="build-project"/>
+        <ant antfile="build.xml" dir="${EZDB.location}" inheritAll="false" target="build-project"/>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <src path="test"/>
+            <classpath refid="dc4.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="DC4Server">
+        <java classname="dc4.DC4Server" failonerror="true" fork="yes">
+            <classpath refid="dc4.classpath"/>
+            <jvmarg value="-Xms400m"/>
+            <jvmarg value="-Xmx400m"/>
+        </java>
+    </target>
+</project>
