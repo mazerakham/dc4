@@ -1,6 +1,8 @@
 $.each(["get", "post", "put", "delete"], (i, method) => {
   $[method] = (url, data, ajaxOptions = {}) => {
 
+    url = API_URL + url;
+    
     const ajaxObject = {
       ...ajaxOptions,
       url: url,

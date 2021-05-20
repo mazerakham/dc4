@@ -7,7 +7,7 @@ function Home() {
   const [a, setA] = useState(null);
 
   const sendRequest = () => {
-    $.get("http://localhost:7070/hello").done(data => {
+    $.get("/hello").done(data => {
       setA(data.a);
       setGotResponse(true);
     });
