@@ -1,6 +1,8 @@
 package dc4;
 
 import bowser.WebServer;
+import dc4.db.DC4DB;
+import dc4.db.upgrade.Backcompat;
 import fabel.JSXHandler;
 import ox.Config;
 import ox.Log;
@@ -15,8 +17,6 @@ public class DC4Server {
       : "https://jakemirra.com/api";
 
   public void start() {
-
-
     WebServer server = new WebServer("DC4 Server", WEBSERVER_PORT, false)
         .controller(new DC4Controller());
     server.add(new JSXHandler(server));
@@ -28,10 +28,11 @@ public class DC4Server {
         .controller(new DC4APIController())
         .start();
     Log.debug("API Server started on port " + API_PORT + ".");
-
   }
 
   public static void main(String... args) {
+    DC4DB.connectToDatabase();
+    new Backcompat().run();
     new DC4Server().start();
   }
 }
