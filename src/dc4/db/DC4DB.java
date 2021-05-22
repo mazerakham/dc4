@@ -9,7 +9,7 @@ import ox.Log;
 
 public abstract class DC4DB {
 
-  private static final Config config = Config.load("ender");
+  private static final Config config = Config.load("dc4");
 
   public static DB db;
 
