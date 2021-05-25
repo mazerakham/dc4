@@ -31,6 +31,7 @@ public class DC4Server {
   }
 
   public static void main(String... args) {
+    Log.logToFolder("dc4");
     DC4DB.connectToDatabase();
     new Backcompat().run();
     new DC4Server().start();
