@@ -14,8 +14,7 @@ public class UserDB extends DC4DB<User> {
   protected Table getTable() {
     return new Table("user")
         .idColumn()
-        .column("timestamp", Instant.class)
-        .column("token", String.class).uniqueIndex();
+        .column("timestamp", Instant.class);
   }
 
   public XOptional<User> getByToken(UUID token) {
