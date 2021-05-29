@@ -14,6 +14,7 @@ public class DC4APIController extends Controller {
     route("GET", "/hello").to(helloHandler);
     route("GET", "/counter").to(getCounter);
     route("POST", "/counter").to(incrementCounter);
+    route("GET", "/personalCounter").to(getPersonalCounter);
   }
 
   private Handler helloHandler = (request, response) -> {
@@ -28,6 +29,10 @@ public class DC4APIController extends Controller {
     int newCount = kv.getInt("count") + 1;
     kv.put("count", newCount);
     response.write(Json.object().with("newCount", newCount));
+  };
+
+  private Handler getPersonalCounter = (request, response) -> {
+
   };
 
 }

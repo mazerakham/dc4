@@ -18,6 +18,7 @@ public class DC4Server {
 
   public void start() {
     WebServer server = new WebServer("DC4 Server", WEBSERVER_PORT, false)
+        .add(new Authenticator())
         .controller(new DC4Controller());
     server.add(new JSXHandler(server));
     server.start();
@@ -25,6 +26,7 @@ public class DC4Server {
 
 
     WebServer apiServer = new WebServer("DC4 API Server", API_PORT, false)
+        .add(new Authenticator())
         .controller(new DC4APIController())
         .start();
     Log.debug("API Server started on port " + API_PORT + ".");
