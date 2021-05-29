@@ -8,7 +8,7 @@ import ez.Row;
 import ez.Table;
 import ox.x.XOptional;
 
-public class UserDB extends DC4DB {
+public class UserDB extends DC4DB<User> {
 
   @Override
   protected Table getTable() {
@@ -23,9 +23,6 @@ public class UserDB extends DC4DB {
     return row == null ? XOptional.empty() : XOptional.of(getTable().fromRow(row, User.class));
   }
 
-  public User insert(User user) {
-    user.id = this.rawQuery().insert("user", getTable().toRow(user));
-    return user;
-  }
+
 
 }

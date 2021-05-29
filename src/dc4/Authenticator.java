@@ -1,43 +1,60 @@
 package dc4;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
-
-import org.simpleframework.http.Cookie;
+import java.util.concurrent.TimeUnit;
 
 import bowser.model.Request;
 import bowser.model.RequestHandler;
 import bowser.model.Response;
+import dc4.db.SessionDB;
 import dc4.db.UserDB;
+import dc4.model.Session;
 import dc4.model.User;
-import ox.Pair;
 import ox.x.XOptional;
 
 public class Authenticator implements RequestHandler {
 
+  private final SessionDB sessionDB = new SessionDB();
   private final UserDB userDB = new UserDB();
 
   @Override
   public boolean process(Request request, Response response) {
-    XOptional<User> user = XOptional.empty();
-    
-    String tokenString = request.cookie("token");
-    if (tokenString != null) {
-      user = userDB.getByToken(UUID.fromString(tokenString));
-      if (user.isPresent()) {
-        request.put("user", user);
-        return false;
-      }
+    User user;
+    Session session;    
+    XOptional<Session> validSessionMaybe = getAndValidateSession(CookieManager.getHostCookie(request, "token"));
+
+    if (validSessionMaybe.isPresent()) {
+      session = validSessionMaybe.get();
+      sessionDB.update(session.id, "expiration", session.expiration = Instant.now().plus(Duration.ofDays(30)));
+      user = userDB.get(session.userId);
+    } else {
+      user = userDB.insert(new User());
+      session = sessionDB.insert(new Session(user.id, UUID.randomUUID(), Instant.now().plus(Duration.ofDays(30))));
     }
     
-    Pair<User, Cookie> userCookie = makeUserAndCookie();
-    response.cookie(userCookie.b);
-    request.put("user", userCookie.a);
+    long days = Duration.between(Instant.now(), session.expiration).toDays();
+    CookieManager.setHostCookie(response, "token", session.token.toString(), (int) days, TimeUnit.DAYS);
+    request.put("user", user);
     return false;
   }
 
-  private Pair<User, Cookie> makeUserAndCookie() {
-    User user = userDB.insert(new User().token(UUID.randomUUID()));
-    return Pair.of(user, new Cookie("token", user.token));
+  private XOptional<Session> getAndValidateSession(String tokenString) {
+    if (tokenString == null || tokenString.isEmpty()) {
+      return XOptional.empty();
+    }
+
+    try {
+      UUID.fromString(tokenString);
+    } catch (Exception e) {
+      return XOptional.empty();
+    }
+
+    UUID token = UUID.fromString(tokenString);
+    XOptional<Session> session = sessionDB.getByToken(token);
+    return session.compute(s -> s.isExpired() ? XOptional.empty() : session, XOptional.empty());
   }
+
 
 }
