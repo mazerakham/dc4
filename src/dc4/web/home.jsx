@@ -1,4 +1,5 @@
 import { React, ReactDOM, useEffect, useState } from "react.mjs";
+import DC4Websockets from "websockets.mjs";
 
 function Home() {
 
@@ -6,6 +7,7 @@ function Home() {
   const [globalCount, setGlobalCount] = useState(null);
   const [gotResponse, setGotResponse] = useState(false);
   const [a, setA] = useState(null);
+  const websockets = new DC4Websockets();
 
   const sendRequest = () => {
     $.get("/hello").done(data => {
@@ -17,6 +19,16 @@ function Home() {
   const incGlobalCount = () => {
     $.post("/counter").done(data => {
       setGlobalCount(data.newCount);
+    });
+  };
+
+  const sendWebsocketMessage = () => {
+    websockets.send({
+      channel: "basic",
+      command: "hello",
+      data: {
+        msg: "A message from home.jsx's sendWebsocketMessage() function."
+      }
     });
   };
 
@@ -39,6 +51,8 @@ function Home() {
         </div>
       )}
       <button onClick={() => incGlobalCount()}>Increment global counter.</button>
+      <button onClick={() => sendWebsocketMessage()}>Send websocket message.</button>
+
     </div>
   );
 }

@@ -1,11 +1,11 @@
-package dc4;
+package dc4.web;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import bowser.model.Controller;
 import bowser.template.Data;
+import dc4.DC4Server;
 import dc4.model.User;
-import ox.Log;
 
 public class DC4Controller extends Controller {
 
@@ -16,8 +16,8 @@ public class DC4Controller extends Controller {
 
   private final Data data = context -> {
     User user = checkNotNull(context.request.get("user"));
-    Log.debug("We have a user: " + user);
     context.put("apiUrl", DC4Server.API_URL);
+    context.put("websocketsUrl", DC4Server.WEBSOCKETS_URL);
   };
 
 }
