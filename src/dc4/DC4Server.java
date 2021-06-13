@@ -12,7 +12,7 @@ public class DC4Server {
   private static final Config config = Config.load("dc4");
   private static final int WEBSERVER_PORT = config.getInt("webserverPort", 8080);
   private static final int API_PORT = config.getInt("apiPort", 7070);
-  private static final String SERVER_TYPE = config.get("serverType");
+  private static final String SERVER_TYPE = config.get("serverType", "dev");
   public static final String API_URL = SERVER_TYPE.equals("dev") ? "http://localhost:7070"
       : "https://jakemirra.com/api";
 
