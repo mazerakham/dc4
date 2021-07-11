@@ -3,6 +3,8 @@ package dc4.model;
 import java.time.Instant;
 import java.util.UUID;
 
+import ox.util.Time;
+
 public class Session extends AbstractModel {
 
   public final long userId;
@@ -18,7 +20,12 @@ public class Session extends AbstractModel {
   }
 
   public boolean isExpired() {
-    return Instant.now().isAfter(expiration);
+    return Time.nowInstant().isAfter(expiration);
+  }
+  
+  @Override
+  public String toString() {
+    return String.format("[userId=%d, uuid=%s, exp=%s]", userId, token, expiration);
   }
 
 }

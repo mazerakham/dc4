@@ -1,4 +1,4 @@
-package dc4;
+package dc4.api;
 
 import static com.google.common.base.Preconditions.checkState;
 

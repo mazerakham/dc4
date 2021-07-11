@@ -4,7 +4,7 @@ import java.time.Instant;
 
 public abstract class AbstractModel {
 
-  public long id;
+  public Long id;
 
   public Instant timestamp = Instant.now();
 

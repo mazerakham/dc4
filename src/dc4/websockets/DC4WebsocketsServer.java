@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 
 import bowser.websocket.ClientSocket;
 import bowser.websocket.WebSocketServer;
+import dc4.DC4Server;
 import ox.Json;
 import ox.Log;
 import ox.Threads;
@@ -18,9 +19,10 @@ public class DC4WebsocketsServer {
 
   private final List<WebsocketsHandler> handlers;
 
-  public DC4WebsocketsServer(int port) {
-    this.server = new WebSocketServer(port);
-    this.handlers = Lists.newArrayList();
+  public DC4WebsocketsServer() {
+    this.server = new WebSocketServer(DC4Server.WEBSOCKETS_PORT);
+    this.handlers = Lists.newArrayList(); 
+    handler(new BasicWebsocketsHandler("basic")); // TODO this doesn't make sense, fix.
   }
 
   public DC4WebsocketsServer handler(WebsocketsHandler handler) {

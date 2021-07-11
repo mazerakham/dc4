@@ -37,6 +37,15 @@ public abstract class DC4DB<T extends AbstractModel> {
       tables.add(table.name.toLowerCase());
     }
   }
+  
+  public static synchronized void inMemoryDatabase() {
+    if (db != null) {
+      return;
+    }
+
+    db = new InMemoryDB("dc4-test");
+    tables = db.getTables();
+  }
 
   public static void connectToDatabase() {
     String schema = config.get("mysql.schema", "dc4");
