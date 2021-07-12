@@ -2,20 +2,29 @@ package dc4.websockets;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.UUID;
+
 import bowser.websocket.ClientSocket;
 import bowser.websocket.WebSocketServer;
+import dc4.CookieManager;
 import dc4.DC4Server;
+import dc4.db.SessionDB;
+import dc4.db.UserDB;
+import dc4.model.Session;
+import dc4.model.User;
 import ox.Json;
 import ox.Log;
 import ox.Threads;
 import ox.x.XList;
+import ox.x.XOptional;
 
 /**
- * This class is really doing the job of two classes, and I hope to refactor eventually. 
+ * This class is really doing the job of two classes, and I hope to refactor eventually.
  * 
- * 1.  It provides an extension of the functionality of WebSocketServer (Bowser) to support structured channels and commands.
+ * 1. It provides an extension of the functionality of WebSocketServer (Bowser) to support structured channels and
+ * commands.
  * 
- * 2.  It implements a websockets server for the DC4 project.
+ * 2. It implements a websockets server for the DC4 project.
  */
 public class DC4WebsocketsServer {
 
@@ -23,9 +32,13 @@ public class DC4WebsocketsServer {
 
   private final XList<WebsocketsHandler> handlers = XList.create();
 
+  private final SessionDB sessionDB = new SessionDB();
+  private final UserDB userDB = new UserDB();
+
   public DC4WebsocketsServer() {
-    server = new WebSocketServer(DC4Server.WEBSOCKETS_PORT).onOpen(this::listenToSocket);
-    handler(new BasicWebsocketsChannel()); 
+    server = new WebSocketServer(DC4Server.WEBSOCKETS_PORT).onOpen(this::authenticateAndListenToSocket);
+    handler(new BasicWebsocketsChannel());
+    handler(new MatchmakingChannel());
   }
 
   public DC4WebsocketsServer handler(WebsocketsHandler handler) {
@@ -38,9 +51,16 @@ public class DC4WebsocketsServer {
     return this;
   }
 
-  private void listenToSocket(ClientSocket socket) {
-    Log.info("Client connected: " + socket);
-    socket.onMessage(s -> Threads.run(() -> delegateMessageToListeners(s, new DC4ClientSocket(socket))));
+  private void authenticateAndListenToSocket(ClientSocket socket) {
+    String token = CookieManager.getHostCookie(socket, "token");
+    XOptional<Session> session = sessionDB.getByToken(UUID.fromString(token));
+    if (session.isPresent() && !session.get().isExpired()) {
+      User user = userDB.get(session.get().userId);
+      socket.onMessage(s -> Threads.run(() -> delegateMessageToListeners(s, new DC4ClientSocket(socket, user))));
+      Log.info("Client connected: " + socket);
+    } else {
+
+    }
   }
 
   private void delegateMessageToListeners(String s, DC4ClientSocket socket) {

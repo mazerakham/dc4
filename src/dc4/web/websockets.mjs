@@ -3,6 +3,7 @@ export default class DC4Websockets {
     this.socket = new WebSocket(WEBSOCKETS_URL);
     this.channels = {};
     this.socket.onmessage = this.handleMessage;
+
     this.listen("basic", "ping", (data) => {
       this.send({
         channel: "basic",
@@ -12,9 +13,14 @@ export default class DC4Websockets {
         }
       });
     });
+
+    this.listen("matchmaking", "matchFound", (data) => {
+      console.log("Received matchmaking response: " + data);
+    });
   }
 
   send = (data) => {
+    data = {...data, token: window.USER_TOKEN};
     this.socket.send(JSON.stringify(data));
   }
 

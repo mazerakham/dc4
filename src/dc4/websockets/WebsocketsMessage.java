@@ -1,5 +1,6 @@
 package dc4.websockets;
 
+import dc4.model.User;
 import ox.Json;
 
 public class WebsocketsMessage {
@@ -18,6 +19,10 @@ public class WebsocketsMessage {
   public WebsocketsMessage withSocket(DC4ClientSocket socket) {
     this.socket = socket;
     return this;
+  }
+  
+  public User getUser() {
+    return this.socket.user;
   }
 
   public Json toJson() {

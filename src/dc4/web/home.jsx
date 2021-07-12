@@ -32,6 +32,14 @@ function Home() {
     });
   };
 
+  const enqueue = () => {
+    websockets.send({
+      channel: "matchmaking",
+      command: "enqueue",
+      data: {}
+    });
+  };
+
   useEffect(() => {
     $.get("/counter").done(data => {
       setGlobalCount(data.count);
@@ -52,6 +60,7 @@ function Home() {
       )}
       <button onClick={() => incGlobalCount()}>Increment global counter.</button>
       <button onClick={() => sendWebsocketMessage()}>Send websocket message.</button>
+      <button onClick={() => enqueue()}>Enqueue.</button>
 
     </div>
   );

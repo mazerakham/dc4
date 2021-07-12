@@ -16,3 +16,11 @@ $.each(["get", "post", "put", "delete"], (i, method) => {
     return $.ajax(ajaxObject);
   };
 });
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop().split(';').shift();
+  }
+}
