@@ -2,36 +2,39 @@ package dc4.websockets;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
-
 import bowser.websocket.ClientSocket;
 import bowser.websocket.WebSocketServer;
 import dc4.DC4Server;
 import ox.Json;
 import ox.Log;
 import ox.Threads;
+import ox.x.XList;
 
+/**
+ * This class is really doing the job of two classes, and I hope to refactor eventually. 
+ * 
+ * 1.  It provides an extension of the functionality of WebSocketServer (Bowser) to support structured channels and commands.
+ * 
+ * 2.  It implements a websockets server for the DC4 project.
+ */
 public class DC4WebsocketsServer {
 
   private final WebSocketServer server;
 
-  private final List<WebsocketsHandler> handlers;
+  private final XList<WebsocketsHandler> handlers = XList.create();
 
   public DC4WebsocketsServer() {
-    this.server = new WebSocketServer(DC4Server.WEBSOCKETS_PORT);
-    this.handlers = Lists.newArrayList(); 
-    handler(new BasicWebsocketsHandler("basic")); // TODO this doesn't make sense, fix.
+    server = new WebSocketServer(DC4Server.WEBSOCKETS_PORT).onOpen(this::listenToSocket);
+    handler(new BasicWebsocketsChannel()); 
   }
 
   public DC4WebsocketsServer handler(WebsocketsHandler handler) {
-    handlers.add(handler);
+    handlers.add(handler.init());
     return this;
   }
 
   public DC4WebsocketsServer start() {
-    server.onOpen(this::listenToSocket).start();
+    server.start();
     return this;
   }
 
@@ -45,11 +48,10 @@ public class DC4WebsocketsServer {
       Log.info("Received malformed websocket message: %s", s);
       return;
     }
-    WebsocketMessage message = parseWebSocketMessage(s).withSocket(socket);
+    WebsocketsMessage message = parseWebSocketMessage(s).withSocket(socket);
     Log.info("Processing websocket message: " + message);
     for (WebsocketsHandler handler : handlers) {
-      if (message.channel.equals(handler.channel)) {
-        handler.handle(message);
+      if (handler.handle(message)) {
         return;
       }
     }
@@ -66,9 +68,9 @@ public class DC4WebsocketsServer {
     return (json.hasKey("channel") && json.hasKey("command") && json.hasKey("data"));
   }
 
-  private WebsocketMessage parseWebSocketMessage(String message) {
+  private WebsocketsMessage parseWebSocketMessage(String message) {
     Json json = new Json(message);
-    return new WebsocketMessage(json.get("channel"), json.get("command"), json.getJson("data"));
+    return new WebsocketsMessage(json.get("channel"), json.get("command"), json.getJson("data"));
   }
 
 }

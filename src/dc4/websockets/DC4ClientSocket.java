@@ -10,7 +10,7 @@ public class DC4ClientSocket {
     this.socket = socket;
   }
 
-  public DC4ClientSocket send(WebsocketMessage message) {
+  public DC4ClientSocket send(WebsocketsMessage message) {
     socket.send(message.toJson());
     return this;
   }
