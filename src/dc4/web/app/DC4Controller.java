@@ -1,4 +1,4 @@
-package dc4.web;
+package dc4.web.app;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -12,7 +12,7 @@ public class DC4Controller extends Controller {
 
   @Override
   public void init() {
-    route("GET", "/").to("home.html").data(data);
+    route("GET", "/").to("app.html").data(data);
   }
 
   private final Data data = context -> {

@@ -13,10 +13,6 @@ export default class DC4Websockets {
         }
       });
     });
-
-    this.listen("matchmaking", "matchFound", (data) => {
-      console.log("Received matchmaking response: " + data);
-    });
   }
 
   send = (data) => {

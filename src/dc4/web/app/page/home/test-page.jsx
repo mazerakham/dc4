@@ -1,13 +1,17 @@
 import { React, ReactDOM, useEffect, useState } from "react.mjs";
-import DC4Websockets from "websockets.mjs";
 
-function Home() {
+export default function TestPage(props) {
 
   const [count, setCount] = useState(0);
   const [globalCount, setGlobalCount] = useState(null);
   const [gotResponse, setGotResponse] = useState(false);
   const [a, setA] = useState(null);
-  const websockets = new DC4Websockets();
+  const websockets = props.websockets;
+
+  websockets.listen("matchmaking", "matchFound", (data) => {
+    console.log("Received matchmaking response: " + data);
+    props.startGame(data);
+  });
 
   const sendRequest = () => {
     $.get("/hello").done(data => {
@@ -65,5 +69,3 @@ function Home() {
     </div>
   );
 }
-
-ReactDOM.render(<Home />, document.querySelector("[home-app]"));
